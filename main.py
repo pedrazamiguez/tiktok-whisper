@@ -117,9 +117,28 @@ class WhisperSpeechToTextAdapter(SpeechToTextPort):
 # ==========================================
 
 def main():
-    # URL de ejemplo (puedes cambiarla por el TikTok que estés viendo)
-    tiktok_url = input("Introduce la URL del vídeo de TikTok: ")
+    import argparse
+    import sys
+
+    # Configurar el paso de argumentos por terminal
+    parser = argparse.ArgumentParser(description="Extrae transcripciones de TikTok.")
+    parser.add_argument("url", type=str, nargs="?", help="La URL del vídeo de TikTok (opcional)")
+    parser.add_argument("-m", "--manual", action="store_true", help="Activar modo interactivo/manual para introducir la URL por consola")
+    args = parser.parse_args()
     
+    # Decidir el origen de la URL
+    tiktok_url = args.url
+    if args.manual or not tiktok_url:
+        try:
+            tiktok_url = input("Introduce la URL del vídeo de TikTok: ")
+        except (KeyboardInterrupt, EOFError):
+            print("\nOperación cancelada por el usuario.", file=sys.stderr)
+            sys.exit(1)
+            
+    if not tiktok_url or tiktok_url.strip() == "":
+        print("ERROR_CRITICO: No se proporcionó ninguna URL de TikTok.", file=sys.stderr)
+        sys.exit(1)
+        
     # 1. Instanciar adaptadores
     audio_downloader = YtDlpAudioAdapter()
     speech_to_text = WhisperSpeechToTextAdapter(model_size="base")
@@ -132,21 +151,24 @@ def main():
     
     # 3. Ejecutar
     try:
-        print("\n--- INICIANDO PROCESAMIENTO ---")
+        # Importante para Antigravity: el print de la transcripción es lo que leerá el agente
         resultado = use_case.execute(tiktok_url)
-        print("\n--- TRANSCRIPCIÓN ---")
-        print(resultado)
-        print("---------------------\n")
-
-        # Guardar la transcripción en un fichero de texto
+        
+        # Opcional: Guardar en fichero (como ya tenías)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         os.makedirs("transcripciones", exist_ok=True)
         output_filename = os.path.join("transcripciones", f"transcripcion_{timestamp}.txt")
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(resultado)
-        print(f"[Output] Transcripción guardada en: {output_filename}")
+            
+        # Imprimimos SOLO la transcripción pura para que el agente no se ensucie con logs
+        print(f"--- TRANSCRIPCION_INICIO ---\n{resultado}\n--- TRANSCRIPCION_FIN ---")
+        
     except Exception as e:
-        print(f"\n[ERROR]: {str(e)}")
+        print(f"ERROR_CRITICO: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
+
+
