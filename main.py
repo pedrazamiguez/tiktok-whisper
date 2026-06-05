@@ -140,7 +140,8 @@ def main():
 
         # Guardar la transcripción en un fichero de texto
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_filename = f"transcripcion_{timestamp}.txt"
+        os.makedirs("transcripciones", exist_ok=True)
+        output_filename = os.path.join("transcripciones", f"transcripcion_{timestamp}.txt")
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(resultado)
         print(f"[Output] Transcripción guardada en: {output_filename}")
