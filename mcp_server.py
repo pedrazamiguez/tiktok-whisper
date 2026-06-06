@@ -23,14 +23,16 @@ def transcribir_tiktok(url: str) -> str:
         if project_dir not in sys.path:
             sys.path.insert(0, project_dir)
             
-        from main import YtDlpAudioAdapter, WhisperSpeechToTextAdapter, ExtractTextFromVideoUseCase
+        from main import YtDlpSubtitleAdapter, YtDlpAudioAdapter, WhisperSpeechToTextAdapter, ExtractTextFromVideoUseCase
         
         # 1. Instanciar adaptadores
+        subtitle_extractor = YtDlpSubtitleAdapter()
         audio_downloader = YtDlpAudioAdapter()
         speech_to_text = WhisperSpeechToTextAdapter(model_size="base")
         
         # 2. Inyectar dependencias en el caso de uso
         use_case = ExtractTextFromVideoUseCase(
+            subtitle_extractor=subtitle_extractor,
             downloader=audio_downloader, 
             transcriber=speech_to_text
         )
