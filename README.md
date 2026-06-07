@@ -1,12 +1,13 @@
-# TikTok Whisper 🎙️
+# TikTok, YouTube & Instagram Whisper 🎙️
 
-Herramienta de línea de comandos para descargar vídeos de TikTok y extraer su transcripción a texto.
+Herramienta de línea de comandos para descargar vídeos de TikTok, YouTube o Instagram y extraer su transcripción a texto.
 
 El sistema sigue un patrón de resiliencia:
 1. **Fase 1 (Vía Rápida)**: Intenta extraer directamente los subtítulos nativos/automáticos del vídeo (vía `yt-dlp`).
 2. **Fase 2 (Fallback IA)**: Si los subtítulos no están disponibles, descarga el audio y realiza la transcripción de audio a texto en local utilizando el modelo **Whisper** de OpenAI.
 
 El proyecto está diseñado siguiendo los principios de la **Arquitectura Hexagonal (Puertos y Adaptadores)** para desacoplar la lógica de negocio (orquestación) de las implementaciones concretas (extracción de subtítulos, descargas y transcripción).
+
 
 
 ## 📋 Requisitos Previos
